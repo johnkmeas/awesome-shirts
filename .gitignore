@@ -15,3 +15,5 @@ package-lock.json
 .Trashes
 ehthumbs.db
 Thumbs.db
+config.yml
+*.zip
