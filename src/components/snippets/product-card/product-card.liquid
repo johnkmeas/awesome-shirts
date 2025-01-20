@@ -1,7 +1,70 @@
+{% comment %}
+  Snippet: product-card.liquid
+  Description: This snippet is used to render a product card.
+  -----------------------------------
+  Usage:
+  {% render 'product-card', product: product %}
+{% endcomment %}
+
 {% assign price_text_color = 'text-black' %}
 {% assign text_color_sale = price_text_color %}
+{% assign color_pattern = product.metafields.shopify['color-pattern'].value %}
 
-<div class='product-card custom w-full px-3 py-6'>
+{% unless color_pattern == blank %}
+  {% capture swatches %}
+    <div class='flex items-center space-x-2 px-0.5'>
+    {% for color in color_pattern %}
+      {% assign has_primary_image = false %}
+      {% assign has_secondary_image = false %}
+      {% assign label = color.label | downcase %}
+        <button
+          js-product-card="swatch"
+          class='
+            {% if forloop.first %}
+              is-active
+              outline
+              outline-1
+              outline-offset-1
+              outline-blue-900
+            {% endif %}
+            w-5 h-5
+            rounded-full
+            bg-{{ label }}
+          '
+          data-color='{{ label }}'
+          style='background-color: {{ color.color }};'
+          {% for image in product.images %}
+            {% if image contains label %}
+              {% if image contains 'secondary' %}
+                data-secondary-image="{{ image | img_url: '660x' }}"
+                {% assign has_secondary_image = true %}
+              {% else %}
+                data-primary-image="{{ image | img_url: '660x' }}"
+                {% assign has_primary_image = true %}
+              {% endif %}
+
+              {% if has_primary_image and has_secondary_image %}
+                {% break %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+
+          {% for variant in product.variants %}
+            {% if variant.options contains color.label %}
+              data-variant-id="{{ variant.id }}"
+              {% break %}
+            {% endif %}
+          {% endfor %}
+        ></button>
+      {% endfor %}
+    </div>
+  {% endcapture %}
+{% endunless %}
+
+<div
+  js-product-card='container'
+  class='product-card custom w-full p-5'
+>
   {% if product.compare_at_price > product.price %}
     <span
       class='
@@ -14,21 +77,36 @@
       On Sale!
     </span>
   {% endif %}
+
   <div class='overflow-hidden bg-white'>
-    <a href='{{ product.url }}'>
-      <div class='overflow-hidden h-80 border rounded-xl'>
+    <a js-product-card='url' href='{{ product.url }}'>
+      <div
+        class='overflow-hidden relative h-100 border rounded-xl'
+        style='padding-block-end: 100%;'
+      >
         {%- if product.featured_image -%}
           <img
+            js-product-card='primary-image'
             class='
+              absolute inset-0
               object-cover w-full h-full
-              transition duration-1000 ease-in-out
-              transform hover:scale-105
+              transition duration-500 ease-in-out
+              transform opacity-100 hover:opacity-0
             '
-            src='{{ product.featured_image | image_url: width: '240' }}'
+            src='{{ product.featured_image | image_url: width: '660' }}'
             alt='{{ product.featured_image.alt }}'
-            width='{{ product.width }}'
-            height='{{ product.height }}'
             loading='lazy'
+          >
+
+          <img
+            js-product-card='secondary-image'
+            class='
+              absolute inset-0
+              object-cover w-full h-full
+              transition duration-500 ease-in-out
+              transform opacity-0 hover:opacity-100
+            '
+            src=''
           >
         {%- else -%}
           {{
@@ -38,19 +116,27 @@
         {%- endif -%}
       </div>
     </a>
-    <div class='flex flex-col p-4'>
-      <span class='text-sm text-black'>{{ product.vendor }}</span>
-      <a class='font-medium text-blue-800' href='{{ product.url }}'>
+
+    <div class='product-card__details  flex flex-col py-4'>
+      {{ swatches }}
+      <span class='text-sm text-black pt-4'>{{ product.vendor }}</span>
+
+      <a
+        js-product-card='url'
+        class='font-medium text-blue-800'
+        href='{{ product.url }}'
+      >
         {{- product.title -}}
       </a>
-      <div class='product-card__price flex space-x-2'>
+
+      <div class='product-card__priceasdfasd flex space-x-2'>
         {% if product.compare_at_price %}
           {% assign text_color_sale = 'text-red-500' %}
-          <p class='{{ price_text_color }} line-through'>
+          <p class='text-sm line-through {{ price_text_color }}'>
             {{ product.compare_at_price | money }}
           </p>
         {%- endif -%}
-        <p class='{{ text_color_sale }}'>{{ product.price | money }}</p>
+        <p class='text-sm {{ text_color_sale }}'>{{ product.price | money }}</p>
       </div>
     </div>
   </div>
