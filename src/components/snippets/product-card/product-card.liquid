@@ -1,18 +1,57 @@
-<div class="w-full px-3 py-6">
-  <div class="overflow-hidden bg-white border rounded shadow">
-    <a href="{{ product.url }}">
-      <div class="overflow-hidden h-80">
-        {%- if product.feature_image -%}
-          <img class="object-cover w-full h-full transition duration-1000 ease-in-out transform hover:scale-105" src="{{ product.featured_image | image_url: width: '240' }}" alt="{{ product.featured_image.alt }}" width="{{ product.width }}" height="{{ product.height }}" loading="lazy" />
+{% assign price_text_color = 'text-black' %}
+{% assign text_color_sale = price_text_color %}
+
+<div class='product-card custom w-full px-3 py-6'>
+  {% if product.compare_at_price > product.price %}
+    <span
+      class='
+        product-card__badge
+        font-semibold text-red-500
+        border rounded-full border-red-500
+        absolute z-10 px-2 m-4
+      '
+    >
+      On Sale!
+    </span>
+  {% endif %}
+  <div class='overflow-hidden bg-white'>
+    <a href='{{ product.url }}'>
+      <div class='overflow-hidden h-80 border rounded-xl'>
+        {%- if product.featured_image -%}
+          <img
+            class='
+              object-cover w-full h-full
+              transition duration-1000 ease-in-out
+              transform hover:scale-105
+            '
+            src='{{ product.featured_image | image_url: width: '240' }}'
+            alt='{{ product.featured_image.alt }}'
+            width='{{ product.width }}'
+            height='{{ product.height }}'
+            loading='lazy'
+          >
         {%- else -%}
-          {{ 'product-1' | placeholder_svg_tag: 'object-cover w-full h-full bg-gray-100' }}
+          {{
+            'product-1'
+            | placeholder_svg_tag: 'object-cover w-full h-full bg-gray-100'
+          }}
         {%- endif -%}
       </div>
     </a>
-    <div class="flex flex-col p-4">
-      <span class="text-sm text-gray-400">{{ product.vendor }}</span>
-      <a class="font-medium text-gray-700 uppercase" href="{{ product.url }}">{{ product.title }}</a>
-      <p class="text-gray-500">{{ product.price | money }}</p>
+    <div class='flex flex-col p-4'>
+      <span class='text-sm text-black'>{{ product.vendor }}</span>
+      <a class='font-medium text-blue-800' href='{{ product.url }}'>
+        {{- product.title -}}
+      </a>
+      <div class='product-card__price flex space-x-2'>
+        {% if product.compare_at_price %}
+          {% assign text_color_sale = 'text-red-500' %}
+          <p class='{{ price_text_color }} line-through'>
+            {{ product.compare_at_price | money }}
+          </p>
+        {%- endif -%}
+        <p class='{{ text_color_sale }}'>{{ product.price | money }}</p>
+      </div>
     </div>
   </div>
 </div>
