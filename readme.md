@@ -1,4 +1,24 @@
-# Webpack Shopify CLI Theme
+# Domaine Tech Assessment
+This Shopify theme is using Webpack Shopify CLI Theme as a boilerplate.
+
+You can see my recent commits for the work I've done to complete this technical challlenge.
+
+I've modified the liquid snippet `product-card.liquid` and created `product-card.js` to implement the swatch interactions.
+
+In Shopify I've setup each colour variant and mapped them to the product images. In the product card snippet I pulled the metafield color-pattern and mapped each colour to a swatch. Each colour swatch will map to an image from the gallery by matching the colour name with the image file name. Each swatch will contain data attributes for the primary image, secondary image, colour label and variant id.
+
+Using javascript I've added an event listener to each swatch that selects the data attributes and dynamically swaps the images, alt text and appends the variant id to the url in the product card.
+
+On the frontend when a customer clicks a swatch it should update the images in the card to match the images mapped to the colour. When a customer hovers over the image, the secondary image will be revealed. When a customer clicks the title or image it will link away to the product page with the colour variant preselected.
+
+
+I kept the original readme below for reference
+
+---
+---
+
+
+## Webpack Shopify CLI Theme
 This is a starter Theme using [Webpack 5](https://webpack.js.org/), [Shopify CLI for themes](https://shopify.dev/themes/tools/cli) and [Tailwind CSS](https://tailwindcss.com/). The goal is to create a tool with a component-based folder structure that is easy to build themes with.
 
 ## 📁 Folder Structure
